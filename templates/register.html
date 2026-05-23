@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Регистрация</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="registerForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="form-text">Введите действующий email, он понадобится для привязки Telegram.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6" required>
+                        <div class="form-text">Минимум 6 символов.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Подтверждение пароля</label>
+                        <input type="password" class="form-control" id="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+                </form>
+                <hr>
+                <div class="text-center">
+                    Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', function(e) {
+        const pwd = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        if (pwd !== confirm) {
+            e.preventDefault();
+            alert('Пароли не совпадают!');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --hover-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+}
+
+body {
+    background: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.navbar {
+    background: var(--primary-gradient) !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.product-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+    background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #5a67d8, #6b46a0);
+}
+
+.order-card {
+    border-left: 5px solid;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+}
+
+/* Для статистики */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 0.5rem;
+}
+.progress-bar {
+    border-radius: 0.5rem;
+    transition: width 0.6s ease;
+}
+/* Для карточек статусов */
+.order-card {
+    transition: transform 0.2s;
+}
+.order-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+.order-card.status-1 { border-left-color: #f59e0b; } /* Создан */
+.order-card.status-2 { border-left-color: #3b82f6; } /* В обработке */
+.order-card.status-3 { border-left-color: #8b5cf6; } /* Доставляется */
+.order-card.status-4 { border-left-color: #10b981; } /* Завершён */
+.order-card.status-5 { border-left-color: #ef4444; } /* Отменён */
+
+.cart-item {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}

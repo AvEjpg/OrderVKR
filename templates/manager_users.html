@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold"><i class="fas fa-users-cog"></i> Управление пользователями (менеджер)</h2>
+    <p class="text-muted">Здесь вы можете изменять роли пользователей: клиент, менеджер, администратор.</p>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Текущая роль</th>
+                            <th>Изменить роль</th>
+                            <th>Дата регистрации</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td><code>{{ user['id'][:8] }}...</code></td>
+                            <td>{{ user['email'] }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if user['role'] == 'admin' %}bg-danger
+                                    {% elif user['role'] == 'manager' %}bg-warning text-dark
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ user['role'] }}
+                                </span>
+                             </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('manager_update_role') }}" class="d-flex gap-2">
+                                    <input type="hidden" name="user_id" value="{{ user['id'] }}">
+                                    <select name="role" class="form-select form-select-sm" style="width: 140px;">
+                                        <option value="client" {% if user['role'] == 'client' %}selected{% endif %}>Клиент</option>
+                                        <option value="manager" {% if user['role'] == 'manager' %}selected{% endif %}>Менеджер</option>
+                                        <option value="admin" {% if user['role'] == 'admin' %}selected{% endif %}>Администратор</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Обновить</button>
+                                </form>
+                             </td>
+                            <td><small>{{ user['created_at'][:10] }}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

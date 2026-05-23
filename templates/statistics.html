@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block page_title %}Статистика и аналитика{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ total }}</h1>
+                <p class="mb-0">Всего заказов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ completed }}</h1>
+                <p class="mb-0">Завершённых</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ "%.0f"|format(total_sum) }} ₽</h1>
+                <p class="mb-0">Общая сумма</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header bg-light">
+        <i class="fas fa-chart-pie me-2"></i> Распределение по статусам
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr><th>Статус</th><th>Количество</th><th>Доля</th></tr>
+                </thead>
+                <tbody>
+                    {% for id, count in status_stats.items() %}
+                    <tr>
+                        <td>{{ status_names[id] }}</td>
+                        <td>{{ count }}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                {% set percent = (count / total * 100) if total > 0 else 0 %}
+                                <div class="progress-bar" style="width: {{ percent }}%;">{{ "%.1f"|format(percent) }}%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

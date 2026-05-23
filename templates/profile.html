@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block page_title %}Личный кабинет{% endblock %}
+{% block actions %}
+    <a href="https://t.me/{{ bot_link.split('/')[-1] }}" target="_blank" class="btn btn-outline-light">
+        <i class="fab fa-telegram me-1"></i> Бот
+    </a>
+{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card bg-gradient-primary text-white" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fab fa-telegram"></i> Telegram-бот</h5>
+                <p class="card-text">Подпишитесь на уведомления о статусах заказов</p>
+                <ol class="small">
+                    <li>Перейдите в бота: <a href="{{ bot_link }}" target="_blank" class="text-white fw-bold">@{{ bot_link.split('/')[-1] }}</a></li>
+                    <li>Напишите <code>/start</code></li>
+                    <li>Введите ваш email: <strong>{{ user_email }}</strong></li>
+                </ol>
+                <a href="{{ bot_link }}" target="_blank" class="btn btn-light rounded-pill mt-2"><i class="fab fa-telegram"></i> Открыть бота</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-white fw-bold">📋 История заказов</div>
+            <div class="card-body">
+                {% if orders %}
+                    <div class="accordion" id="ordersAccordion">
+                        {% for order in orders %}
+                            <div class="accordion-item order-card status-{{ order['status_id'] }} mb-3 border rounded">
+                                <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false">
+                                        <div class="d-flex justify-content-between w-100 me-3 align-items-center">
+                                            <span class="fw-bold">Заказ #{{ order['id'][:8] }}</span>
+                                            <span class="text-dark">{{ order['total_price'] }} ₽</span>
+                                            <span class="badge 
+                                                {% if order['status_id'] == 1 %}bg-warning text-dark
+                                                {% elif order['status_id'] == 2 %}bg-primary
+                                                {% elif order['status_id'] == 3 %}bg-info text-dark
+                                                {% elif order['status_id'] == 4 %}bg-success
+                                                {% else %}bg-danger{% endif %}">
+                                                {{ order['status_name'] }}
+                                            </span>
+                                            <small class="text-muted">{{ order['created_at'][:19] }}</small>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#ordersAccordion">
+                                    <div class="accordion-body">
+                                        <h6 class="mb-3">Состав заказа:</h6>
+                                        <ul class="list-group">
+                                            {% for item in order['items'] %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ item['product_name'] }}
+                                                    <span class="badge bg-secondary rounded-pill">{{ item['quantity'] }} шт.</span>
+                                                    <span>{{ item['price'] * item['quantity'] }} ₽</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info text-center">Заказов пока нет.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .order-card { border-left: 4px solid; }
+    .status-1 { border-left-color: #ffc107; }
+    .status-2 { border-left-color: #0d6efd; }
+    .status-3 { border-left-color: #0dcaf0; }
+    .status-4 { border-left-color: #198754; }
+    .status-5 { border-left-color: #dc3545; }
+    .accordion-button:not(.collapsed) { background-color: #f8f9fa; color: #000; }
+    .accordion-button:focus { box-shadow: none; }
+</style>
+{% endblock %}

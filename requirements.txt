@@ -1,0 +1,8 @@
+fastapi[all]
+uvicorn
+sqlalchemy>=2.0.0
+asyncpg
+pyjwt[crypto]
+bcrypt
+pydantic-settings
+aiogram>=3.0.0

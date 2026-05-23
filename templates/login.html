@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center min-vh-75 align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 text-center">
+                    <h3 class="fw-bold">Добро пожаловать</h3>
+                    <p class="text-muted">Войдите в свою учётную запись</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" name="email" class="form-control rounded-pill" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><i class="fas fa-lock"></i> Пароль</label>
+                            <input type="password" name="password" class="form-control rounded-pill" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2">Войти</button>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        Нет аккаунта? <a href="{{ url_for('register') }}" class="text-decoration-none">Зарегистрироваться</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
