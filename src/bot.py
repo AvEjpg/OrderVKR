@@ -17,14 +17,11 @@ from src.config import settings
 from src.database import async_session_maker
 from src.models.models import User, TelegramProfile, Order, OrderStatus
 
-# Настраиваем логирование
 logging.basicConfig(level=logging.INFO)
 
-# Инициализируем бота и диспетчер
 bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
 dp = Dispatcher()
 
-# Состояния для диалога (FSM)
 class LinkState(StatesGroup):
     waiting_for_email = State()
 
@@ -52,15 +49,47 @@ async def cmd_start(message: types.Message, state: FSMContext):
             )
             await state.set_state(LinkState.waiting_for_email)
 
+@dp.message(lambda message: message.text == "/unlink")
+async def unlink_telegram(message: types.Message):
+    """Отвязывает Telegram аккаунт от учётной записи"""
+    chat_id = message.chat.id
+    
+    async with async_session_maker() as session:
+        # Ищем профиль по chat_id
+        query = select(TelegramProfile).where(TelegramProfile.chat_id == chat_id)
+        result = await session.execute(query)
+        profile = result.scalar_one_or_none()
+        
+        if not profile:
+            await message.answer(
+                "❌ Ваш Telegram аккаунт не привязан к системе.\n"
+                "Используйте команду /start для привязки."
+            )
+            return
+        
+        # Сохраняем email пользователя для сообщения
+        user_query = select(User).where(User.id == profile.user_id)
+        user_result = await session.execute(user_query)
+        user = user_result.scalar_one_or_none()
+        user_email = user.email if user else "неизвестный"
+        
+        # Удаляем профиль
+        await session.delete(profile)
+        await session.commit()
+    
+    await message.answer(
+        f"✅ Ваш аккаунт ({user_email}) успешно отвязан от Telegram.\n\n"
+        f"Вы больше не будете получать уведомления о заказах.\n"
+        f"Если захотите снова привязать аккаунт, используйте команду /start."
+    )
+
 @dp.message(LinkState.waiting_for_email)
 async def process_email(message: types.Message, state: FSMContext):
     email = message.text.strip().lower()
     chat_id = message.chat.id
     username = message.from_user.username
 
-    # Открываем сессию к нашей БД OrderVKR
     async with async_session_maker() as session:
-        # Проверяем, есть ли юзер с таким email
         query = select(User).where(User.email == email)
         result = await session.execute(query)
         user = result.scalar_one_or_none()
@@ -91,16 +120,7 @@ async def process_email(message: types.Message, state: FSMContext):
     await message.answer("🎉 Успешно! Ваш Telegram профиль привязан. Теперь вы будете получать уведомления об изменении статуса ваших заказов.")
     await state.clear()
 
-@dp.message(lambda message: message.text == "/test_bot")
-async def test_bot(message: types.Message):
-    await message.answer("✅ Бот работает! Получаю сигнал и отправляю тестовое сообщение...")
-    # Отправляем сообщение самому себе для проверки
-    await message.answer("📦 Это тестовое уведомление от вашей системы заказов!")
-    logging.info(f"Тестовое сообщение отправлено в чат {message.chat.id}")
 
-# =====================================================================
-# НОВАЯ ИЗОЛИРОВАННАЯ ФУНКЦИЯ ДЛЯ УВЕДОМЛЕНИЙ (Вызывается из FastAPI)
-# =====================================================================
 async def send_status_update_notification(order_id: uuid.UUID, status_id: int):
     """
     Фоновая функция: запрашивает данные о заказе и отправляет пуш в Telegram
@@ -127,7 +147,7 @@ async def send_status_update_notification(order_id: uuid.UUID, status_id: int):
             tg_res = await session.execute(tg_query)
             tg_profile = tg_res.scalar_one_or_none()
 
-            # 4. Если профиль есть — шлем красивое Markdown-сообщение
+            # 4. Если профиль есть шлем сообщение
             if tg_profile:
                 message_text = (
                     f"📦 <b>Обновление статуса заказа!</b>\n\n"
