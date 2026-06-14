@@ -149,9 +149,12 @@ async def send_status_update_notification(order_id: uuid.UUID, status_id: int):
 
             # 4. Если профиль есть шлем сообщение
             if tg_profile:
+                # Берём только первые 8 символов от UUID (например, f91d4142)
+                short_id = str(order_obj.id)[:8]
+                
                 message_text = (
                     f"📦 <b>Обновление статуса заказа!</b>\n\n"
-                    f"🔢 <b>ID заказа:</b> <code>{order_obj.id}</code>\n"
+                    f"🔢 <b>ID заказа:</b> <code>{short_id}</code>\n"
                     f"💰 <b>Сумма:</b> {order_obj.total_price} руб.\n"
                     f"🔔 <b>Новый статус:</b> {status_name}"
                 )
