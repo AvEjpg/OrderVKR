@@ -6,3 +6,11 @@ pyjwt[crypto]
 bcrypt
 pydantic-settings
 aiogram>=3.0.0
+pedantic
+python-dotenv
+flask
+requests
+pyjwt
+qrcode
+python-dotenv
+gunicorn
